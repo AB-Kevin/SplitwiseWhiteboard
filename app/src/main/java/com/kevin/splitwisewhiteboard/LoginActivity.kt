@@ -6,6 +6,8 @@ import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.kevin.splitwisewhiteboard.storage.SecureStore
 
 /**
@@ -32,6 +34,17 @@ class LoginActivity : AppCompatActivity() {
 
         webView = WebView(this)
         setContentView(webView)
+
+        // The WebView fills the whole edge-to-edge window, so without this
+        // the top of the login form renders right under the status
+        // bar/camera cutout (and the bottom under gesture nav). Pad it by
+        // the system bar insets instead, same fix as MainActivity's.
+        webView.clipToPadding = false
+        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
 
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true

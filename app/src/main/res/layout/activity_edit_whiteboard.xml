@@ -30,14 +30,14 @@
 
         <Button
             android:id="@+id/cancelButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/edit_whiteboard_cancel" />
 
         <Button
             android:id="@+id/saveButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import com.kevin.splitwisewhiteboard.EditWhiteboardActivity
+import com.kevin.splitwisewhiteboard.MainActivity
 import com.kevin.splitwisewhiteboard.R
 import com.kevin.splitwisewhiteboard.network.SplitwiseAuthException
 import com.kevin.splitwisewhiteboard.network.SplitwiseClient
@@ -37,8 +38,9 @@ object WidgetUpdater {
 
         val groupId = SecureStore.getSelectedGroupId(context)
         val cookie = SecureStore.getCookieHeader(context)
+        val isSetUp = cookie != null && groupId >= 0
 
-        if (cookie == null || groupId < 0) {
+        if (!isSetUp) {
             views.setTextViewText(R.id.widgetGroupName, context.getString(R.string.app_name))
             views.setTextViewText(R.id.widgetText, context.getString(R.string.widget_setup_prompt))
         } else {
@@ -64,7 +66,11 @@ object WidgetUpdater {
             )
         }
 
-        val editIntent = Intent(context, EditWhiteboardActivity::class.java).apply {
+        // Not set up yet? Send the tap straight to the main app to log in and
+        // pick a group, instead of the edit screen that would just bounce
+        // back with a "go do that first" toast.
+        val targetActivity = if (isSetUp) EditWhiteboardActivity::class.java else MainActivity::class.java
+        val editIntent = Intent(context, targetActivity).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(

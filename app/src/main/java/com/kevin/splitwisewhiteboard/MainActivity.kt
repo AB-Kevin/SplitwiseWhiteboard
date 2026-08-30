@@ -10,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.kevin.splitwisewhiteboard.network.GroupSummary
 import com.kevin.splitwisewhiteboard.network.SplitwiseAuthException
@@ -45,6 +47,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // The app targets edge-to-edge display, so the root layout draws
+        // under the status bar by default — on phones with a hole-punch
+        // camera up there, that put statusText right behind the camera and
+        // notification icons. Push the content down by the system bar insets
+        // (on top of the layout's own padding) so nothing overlaps.
+        val root = findViewById<android.view.View>(R.id.main)
+        val basePadding = intArrayOf(root.paddingLeft, root.paddingTop, root.paddingRight, root.paddingBottom)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                basePadding[0] + bars.left,
+                basePadding[1] + bars.top,
+                basePadding[2] + bars.right,
+                basePadding[3] + bars.bottom
+            )
+            insets
+        }
 
         statusText = findViewById(R.id.statusText)
         loginButton = findViewById(R.id.loginButton)
