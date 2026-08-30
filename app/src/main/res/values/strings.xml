@@ -22,4 +22,13 @@
 
     <string name="edit_whiteboard_save">Save</string>
     <string name="edit_whiteboard_cancel">Cancel</string>
+
+    <string name="check_for_updates_button">Check for updates</string>
+    <string name="update_available_title">Update available: %1$s</string>
+    <string name="update_available_message">A newer version is available on GitHub. Download and install it now?</string>
+    <string name="update_download_button">Download &amp; install</string>
+    <string name="update_none_toast">You\'re up to date.</string>
+    <string name="update_check_failed_toast">Couldn\'t check for updates. Check your connection and try again.</string>
+    <string name="update_downloading_toast">Downloading update…</string>
+    <string name="install_permission_needed_toast">Allow installing from this app, then tap Check for updates again.</string>
 </resources>

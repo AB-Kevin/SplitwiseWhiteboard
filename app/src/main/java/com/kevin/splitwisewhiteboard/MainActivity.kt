@@ -1,5 +1,6 @@
 package com.kevin.splitwisewhiteboard
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -14,6 +15,9 @@ import com.kevin.splitwisewhiteboard.network.GroupSummary
 import com.kevin.splitwisewhiteboard.network.SplitwiseAuthException
 import com.kevin.splitwisewhiteboard.network.SplitwiseClient
 import com.kevin.splitwisewhiteboard.storage.SecureStore
+import com.kevin.splitwisewhiteboard.update.UpdateChecker
+import com.kevin.splitwisewhiteboard.update.UpdateInfo
+import com.kevin.splitwisewhiteboard.update.UpdateInstaller
 import com.kevin.splitwisewhiteboard.widget.WidgetUpdater
 import com.kevin.splitwisewhiteboard.work.WhiteboardRefreshScheduler
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var groupListView: ListView
     private lateinit var refreshWidgetButton: Button
+    private lateinit var checkForUpdatesButton: Button
 
     private var groups: List<GroupSummary> = emptyList()
 
@@ -45,10 +50,13 @@ class MainActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         groupListView = findViewById(R.id.groupListView)
         refreshWidgetButton = findViewById(R.id.refreshWidgetButton)
+        checkForUpdatesButton = findViewById(R.id.checkForUpdatesButton)
 
         loginButton.setOnClickListener {
             loginLauncher.launch(Intent(this, LoginActivity::class.java))
         }
+
+        checkForUpdatesButton.setOnClickListener { checkForUpdates(showResultToast = true) }
 
         groupListView.setOnItemClickListener { _, _, position, _ ->
             val group = groups.getOrNull(position) ?: return@setOnItemClickListener
@@ -66,6 +74,58 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshStatus()
+
+        if (UpdateChecker.shouldAutoCheck(this)) {
+            UpdateChecker.markCheckedNow(this)
+            checkForUpdates(showResultToast = false)
+        }
+    }
+
+    /**
+     * Checks GitHub Releases for a newer build. [showResultToast] controls
+     * whether "you're up to date" / "couldn't check" get surfaced — the
+     * silent background check on launch stays quiet unless there's actually
+     * an update to show; the manual button always reports something.
+     */
+    @Suppress("DEPRECATION")
+    private fun checkForUpdates(showResultToast: Boolean) {
+        lifecycleScope.launch {
+            val currentVersion = packageManager.getPackageInfo(packageName, 0).versionName ?: "0"
+            val result = withContext(Dispatchers.IO) { UpdateChecker.checkForUpdate(currentVersion) }
+            result.fold(
+                onSuccess = { update ->
+                    if (update != null) {
+                        showUpdateDialog(update)
+                    } else if (showResultToast) {
+                        Toast.makeText(this@MainActivity, R.string.update_none_toast, Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onFailure = {
+                    if (showResultToast) {
+                        Toast.makeText(this@MainActivity, R.string.update_check_failed_toast, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }
+    }
+
+    private fun showUpdateDialog(update: UpdateInfo) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.update_available_title, update.versionTag))
+            .setMessage(R.string.update_available_message)
+            .setPositiveButton(R.string.update_download_button) { _, _ -> startUpdateDownload(update) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun startUpdateDownload(update: UpdateInfo) {
+        if (UpdateInstaller.needsInstallPermission(this)) {
+            Toast.makeText(this, R.string.install_permission_needed_toast, Toast.LENGTH_LONG).show()
+            UpdateInstaller.requestInstallPermission(this)
+            return
+        }
+        UpdateInstaller.downloadUpdate(this, update.apkDownloadUrl, update.versionTag)
+        Toast.makeText(this, R.string.update_downloading_toast, Toast.LENGTH_SHORT).show()
     }
 
     private fun refreshStatus() {
