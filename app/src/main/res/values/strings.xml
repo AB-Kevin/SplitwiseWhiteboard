@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Splitwise Whiteboard</string>
+
+    <string name="not_logged_in_status">Not logged in yet.</string>
+    <string name="logged_in_status_with_group">Logged in. Widget shows: %1$s</string>
+    <string name="logged_in_status_no_group">Logged in. Pick a group below to show on the widget.</string>
+    <string name="log_in_button">Log in to Splitwise</string>
+    <string name="log_in_again_button">Log in again</string>
+    <string name="choose_group_label">Choose a group</string>
+    <string name="refresh_widget_button">Refresh widget now</string>
+    <string name="group_selected_toast">Widget will show: %1$s</string>
+    <string name="could_not_load_groups_toast">Couldn\'t load your groups. Check your connection and try again.</string>
+    <string name="widget_refreshed_toast">Widget refreshed.</string>
+
+    <string name="session_expired_message">Your Splitwise session expired. Please log in again.</string>
+    <string name="setup_required_message">Open the app and log in / choose a group first.</string>
+    <string name="save_failed_message">Couldn\'t save — check your connection and try again.</string>
+
+    <string name="widget_setup_prompt">Tap to set up</string>
+    <string name="widget_session_expired_prompt">Session expired — tap to fix</string>
+    <string name="widget_empty_prompt">(empty — tap to add something)</string>
+
+    <string name="edit_whiteboard_save">Save</string>
+    <string name="edit_whiteboard_cancel">Cancel</string>
+</resources>

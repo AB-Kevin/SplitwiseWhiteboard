@@ -1,0 +1,16 @@
+*.iml
+.gradle
+/local.properties
+.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# Android Studio / Gradle build output anywhere in the tree
+build/
