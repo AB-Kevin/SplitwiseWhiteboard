@@ -12,8 +12,8 @@ android {
         applicationId = "com.kevin.splitwisewhiteboard"
         minSdk = 26
         targetSdk = 37
-        versionCode = 10002
-        versionName = "1.0.2"
+        versionCode = 10100
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
